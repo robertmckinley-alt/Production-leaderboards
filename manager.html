@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PhatPanda &middot; Manager Roll-up (TV 5)</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.brand-title{font-size:26px;}
+.big-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:12px 28px 6px;}
+.bk{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+  display:flex;flex-direction:column;gap:4px;}
+.bk-l{font-size:10px;font-weight:800;letter-spacing:.18em;color:var(--muted);}
+.bk-v{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1;}
+.bk-u{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+.bk.feature{background:linear-gradient(100deg,rgba(114,188,68,.18),var(--panel));
+  border-color:rgba(114,188,68,.5);}
+.bk.feature .bk-v{color:var(--green);}
+.bk.red .bk-v{color:var(--red);}
+.bk.green .bk-v{color:var(--green);}
+.bk.amber .bk-v{color:var(--amber);}
+
+.mini-cols{grid-template-columns:repeat(4,1fr);height:240px;}
+.mini-cols .panel{padding:8px 12px;}
+.mini-cols .p-title{font-size:12px;}
+.mini-cols .lrow{font-size:12px;padding:5px 7px;}
+.mini-cols .lr-name{font-size:12px;}
+.mini-cols .lr-val{font-size:14px;}
+.mini-cols .lr-medal{font-size:14px;width:18px;}
+.mini-cols .lr-sub{font-size:9px;}
+
+.ship-strip{margin:6px 28px 0;background:linear-gradient(100deg,rgba(114,188,68,.12),var(--panel));
+  border:1px solid var(--line);border-radius:8px;padding:10px 16px;
+  display:flex;align-items:center;gap:14px;}
+.ship-l{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--green);}
+.ship-items{display:flex;gap:18px;flex:1;}
+.ship-item{font-size:13px;font-weight:700;}
+.ship-item.done{color:var(--green);}
+.ship-item.next{color:var(--amber);}
+.ship-item .code{font-weight:900;}
+
+.ticker-bar{margin:8px 0 0;background:var(--panel);border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);padding:10px 0;overflow:hidden;}
+.ticker{display:flex;gap:40px;white-space:nowrap;animation:scroll 42s linear infinite;}
+.ti{font-size:14px;font-weight:700;}
+.ti b{color:var(--green);}
+.ti.gold b{color:var(--amber);}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <a class="back" href="index.html">&larr; Index</a>
+  <div id="app"></div>
+  <div id="overlay" class="overlay hidden"><div class="ov-inner">
+    <div class="ov-icon" id="ov-icon">&#127881;</div>
+    <div class="ov-tag" id="ov-tag">DAILY TARGET</div>
+    <div class="ov-name" id="ov-name">PACKAGING HIT 5,000</div>
+    <div class="ov-sub" id="ov-sub">on pace for 9,500 by EOD</div>
+  </div></div>
+  <canvas id="confetti"></canvas>
+  <div class="sound-hint">&#128266; click to enable sound</div>
+</div></div>
+<script src="common.js"></script>
+<script>
+const DATA = {
+  big: [
+    {l:"LBS BUCKED",   v:"3,420",   u:"today",                  cls:"green"},
+    {l:"JOINTS MADE",  v:"15,240",  u:"today",                  cls:""},
+    {l:"UNITS PACKED", v:"8,640",   u:"today",                  cls:""},
+    {l:"ORDERS STAGED",v:"87 / 124",u:"shipping queue",         cls:""},
+    {l:"TRUCKS OUT",   v:"2 / 4",   u:"departed today",         cls:"feature"},
+    {l:"HEALTH",       v:"\u{1F7E2}", u:"all teams on pace",    cls:"green"}
+  ],
+  bucking:  [
+    {n:"Paul Delaney",    v:"4.91 lb/hr"},
+    {n:"Nalani Phipps",   v:"4.87"},
+    {n:"Mariah Scroggins",v:"4.65 PR"}
+  ],
+  prune:    [
+    {n:"Kraig Krashowetz",v:"18.4 lb"},
+    {n:"Holly Surgenor",  v:"15.7"},
+    {n:"Jamie Tart",      v:"14.9"}
+  ],
+  joints:   [
+    {n:"#3272 V. Miles",  v:"438 /hr"},
+    {n:"#1258 A. Manning",v:"412 /hr"},
+    {n:"#1310 D. Ring",   v:"387 /hr"}
+  ],
+  packaging:[
+    {n:"#4748 S. Patel",  v:"164 /hr"},
+    {n:"#1194 J. Lee",    v:"158 /hr"},
+    {n:"#4933 R. Diaz",   v:"152 /hr"}
+  ],
+  ship: [
+    {state:"done", text:"T1 launched 11:02 AM",     code:"T1"},
+    {state:"done", text:"S2 launched 1:48 PM",      code:"S2"},
+    {state:"next", text:"T2 departs in 0:47",       code:"T2"},
+    {state:"",     text:"T3 14:00 &middot; T5 15:30 queued", code:""}
+  ],
+  ticker: [
+    {t:"\u{1F69A} T1 OUT  &middot; Tuesday Route 1 launched 11:02 AM", cls:""},
+    {t:"\u{1F525} Paul Delaney  &middot;  4.91 lb/hr 14-day rolling", cls:""},
+    {t:"\u{1F3AF} Packaging crossed 5,000 units at 1:18 PM", cls:"gold"},
+    {t:"\u{1F3C6} Mariah Scroggins  &middot;  new PR 4.65 lb/hr", cls:""},
+    {t:"\u{26A0}\u{FE0F} Machine 3 idle 12 min  &middot;  packaging floor", cls:"gold"},
+    {t:"\u{1F389} 15,000 joints crossed at 2:14 PM", cls:""},
+    {t:"\u{1F69A} S2 OUT  &middot; Seattle Route 2 launched 1:48 PM", cls:""},
+    {t:"\u{231B} T2 next — departs in 47 min", cls:""}
+  ]
+};
+
+function mini(title, sub, rows, color){
+  const medals = ['\u{1F947}','\u{1F948}','\u{1F949}'];
+  return '<div class="panel"><div class="p-head">'
+    +'<div class="p-title">'+esc(title)+'</div>'
+    +'<div class="p-sub">'+esc(sub||'')+'</div></div>'
+    +rows.map((r,i)=>
+      '<div class="lrow r'+(i+1)+'">'
+      +'<div class="lr-medal">'+medals[i]+'</div>'
+      +'<div class="lr-name">'+esc(r.n)+'</div>'
+      +'<span class="lr-val '+(color||'green')+'">'+esc(r.v)+'</span></div>'
+    ).join('') + '</div>';
+}
+
+function render(){
+  // duplicate ticker items so the scroll loops seamlessly
+  const tickHTML = DATA.ticker.concat(DATA.ticker)
+    .map(t=>'<span class="ti '+(t.cls||'')+'">'+t.t+'</span>').join('');
+  const html = ''
+    +'<div class="header">'
+      +'<div class="brand"><div class="panda">P</div>'
+      +'<div><div class="brand-name">PHATPANDA &middot; GROW OP FARMS</div>'
+      +'<div class="brand-title">PLANT <em>TODAY</em></div></div></div>'
+      +'<div class="head-mid"><div class="head-day">TUESDAY</div>'
+      +'<div class="head-date">MAY 26, 2026</div></div>'
+      +'<div class="head-right"><div class="clock" id="clock">--:--</div>'
+      +'<div class="updated"><span class="dot"></span>live</div></div></div>'
+    +'<div class="big-kpis">'
+      + DATA.big.map(b=>
+        '<div class="bk '+(b.cls||'')+'">'
+        +'<div class="bk-l">'+esc(b.l)+'</div>'
+        +'<div class="bk-v">'+b.v+'</div>'
+        +'<div class="bk-u">'+esc(b.u)+'</div></div>'
+      ).join('')
+    +'</div>'
+    +'<div class="cols mini-cols">'
+      + mini('BUCKING',   '14-day rolling',  DATA.bucking,   'green')
+      + mini('PRUNE',     'today',           DATA.prune,     'green')
+      + mini('JOINTS',    'joints / hr',     DATA.joints,    'green')
+      + mini('PACKAGING', 'units / hr',      DATA.packaging, 'green')
+    +'</div>'
+    +'<div class="ship-strip"><span class="ship-l">SHIPPING</span>'
+      +'<div class="ship-items">'
+        + DATA.ship.map(s=>
+          '<span class="ship-item '+(s.state||'')+'">'
+          +(s.code?'<span class="code">'+esc(s.code)+'</span> &middot; ':'')
+          +s.text+'</span>').join('')
+      +'</div></div>'
+    +'<div class="ticker-bar"><div class="ticker">'+tickHTML+'</div></div>';
+  $('#app').innerHTML = html;
+  bootStage();
+  setTimeout(()=>celebrate({
+    icon:'\u{1F389}', tag:'DAILY TARGET', name:'PACKAGING HIT 5,000',
+    sub:'on pace for 9,500 by EOD', sound:'fanfare', confetti:180
+  }), 1200);
+}
+
+render();
+</script>
+</body></html>

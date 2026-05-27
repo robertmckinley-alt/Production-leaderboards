@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PhatPanda &middot; Joint Room (TV 3)</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.jr-cols{grid-template-columns:1.5fr 1fr;height:340px;}
+.jr-cols .panel{height:100%;overflow:hidden;}
+.podium{display:flex;flex-direction:column;gap:5px;flex:1;overflow:hidden;}
+.strain-list{display:flex;flex-direction:column;gap:6px;}
+.strain-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  padding:8px 10px;background:var(--panel2);border-radius:5px;border-left:3px solid var(--green);}
+.strain-row .nm{font-size:14px;font-weight:800;}
+.strain-row .ct{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--green);}
+.jnation-tile{margin-top:auto;background:var(--panel2);border:1px dashed var(--line);border-radius:6px;
+  padding:14px;text-align:center;}
+.jnation-tile.idle{color:var(--muted);}
+.jnation-tile .icon{font-size:34px;line-height:1;margin-bottom:6px;}
+.jnation-tile .l{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--green);}
+.jnation-tile .sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:4px;}
+.now-bar{margin:6px 28px 12px;background:linear-gradient(100deg,rgba(114,188,68,.15),var(--panel));
+  border:1px solid rgba(114,188,68,.4);border-radius:8px;padding:12px 16px;
+  display:flex;align-items:center;gap:14px;}
+.now-bar .l{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--green);}
+.now-bar .t{font-size:15px;font-weight:700;flex:1;}
+.now-bar .r{font-size:12px;color:var(--muted);font-weight:600;}
+.pace{display:flex;gap:4px;}
+.pace .d{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);}
+.pace .d.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <a class="back" href="index.html">&larr; Index</a>
+  <div id="app"></div>
+  <div id="overlay" class="overlay hidden"><div class="ov-inner">
+    <div class="ov-icon" id="ov-icon">&#127881;</div>
+    <div class="ov-tag" id="ov-tag">MILESTONE</div>
+    <div class="ov-name" id="ov-name">15,000 JOINTS</div>
+    <div class="ov-sub" id="ov-sub">crossed at 2:14 PM today</div>
+  </div></div>
+  <canvas id="confetti"></canvas>
+  <div class="sound-hint">&#128266; click to enable sound</div>
+</div></div>
+<script src="common.js"></script>
+<script>
+const DATA = {
+  daily_target: 18000,
+  kpis: {
+    joints_today: 15240,
+    rate_now: 312,        // joints/hr current
+    top_strain: "Trophy Wife",
+    redos: 28
+  },
+  operators: [
+    {id:"3272", name:"Victoria Miles",   rate:438, total:1840, badge:"PR"},
+    {id:"1258", name:"Adam Manning",     rate:412, total:1620},
+    {id:"1310", name:"Donald Ring",      rate:387, total:1490},
+    {id:"741",  name:"Cody Grizzle",     rate:362, total:1340},
+    {id:"1940", name:"April Martinet",   rate:341, total:1260},
+    {id:"1702", name:"Jade Turell",      rate:328, total:1190},
+    {id:"3087", name:"Sylvia Joyner",    rate:312, total:1140},
+    {id:"2839", name:"Marissa Bracey",   rate:289, total:1050},
+    {id:"1192", name:"Adam Bown",        rate:264, total:  920},
+    {id:"2287", name:"Jami Pugh",        rate:241, total:  850},
+    {id:"11932",name:"Brandon James",    rate:218, total:  760},
+    {id:"3163", name:"Joel Grizzle",     rate:195, total:  680}
+  ],
+  strains_today: [
+    {name:"Trophy Wife",       count:5260},
+    {name:"Jack Herer",        count:3940},
+    {name:"OG Chem",           count:2870},
+    {name:"Golden Pineapple",  count:1820},
+    {name:"White Runtz",       count:1350}
+  ],
+  now_running: { strain:"Jack Herer", batch:"200ct flat", remaining:"18 min" },
+  jnation_status: "idle"
+};
+
+function rateClass(r){ return r>=350?'green':(r>=250?'amber':'red'); }
+function paceHTML(){
+  const pct = Math.min(1, DATA.kpis.joints_today / DATA.daily_target);
+  const on = Math.round(pct*5);
+  let d=''; for(let i=0;i<5;i++) d += '<div class="d '+(i<on?'on':'')+'"></div>';
+  return '<div class="pace">'+d+'</div>';
+}
+function opRow(p, i){
+  const cls = i<3 ? ('r'+(i+1)) : '';
+  const medal = ['\u{1F947}','\u{1F948}','\u{1F949}'][i] || ('#'+(i+1));
+  const badge = p.badge ? '<span style="font-size:9px;font-weight:900;letter-spacing:.12em;'
+    +'background:var(--amber);color:#000;padding:2px 6px;border-radius:3px;margin-left:6px;">'
+    +esc(p.badge)+'</span>' : '';
+  return '<div class="lrow '+cls+'">'
+    +'<div class="lr-medal">'+medal+'</div>'
+    +'<div><div class="lr-name">#'+esc(p.id)+' &middot; '+esc(p.name)+badge+'</div>'
+    +'<div class="lr-sub">'+p.total.toLocaleString()+' joints today</div></div>'
+    +'<span class="lr-val '+rateClass(p.rate)+'">'+p.rate
+    +'<span style="font-size:10px;color:var(--muted);font-weight:600;"> /hr</span></span></div>';
+}
+
+function render(){
+  const k = DATA.kpis;
+  const html = ''
+    +'<div class="header">'
+      +'<div class="brand"><div class="panda">P</div>'
+      +'<div><div class="brand-name">PHATPANDA</div>'
+      +'<div class="brand-title">JOINT <em>ROOM</em></div></div></div>'
+      +'<div class="head-mid"><div class="head-day">TUESDAY</div>'
+      +'<div class="head-date">MAY 26, 2026</div></div>'
+      +'<div class="head-right"><div class="clock" id="clock">--:--</div>'
+      +'<div class="updated"><span class="dot"></span>live</div></div></div>'
+    +'<div class="kpis c5">'
+      +tile("JOINTS TODAY", k.joints_today.toLocaleString(), "of "+DATA.daily_target.toLocaleString()+" goal", "green")
+      +tile("RATE NOW", k.rate_now+' /hr', "across active operators", "")
+      +'<div class="kpi feature"><div class="kpi-label">TOP STRAIN TODAY</div>'
+        +'<div class="kpi-val" style="font-size:28px;">'+esc(k.top_strain)+'</div>'
+        +'<div class="kpi-sub">5,260 produced</div></div>'
+      +'<div class="kpi"><div class="kpi-label">ON PACE</div>'
+        +'<div class="kpi-val" style="font-size:18px;">'+paceHTML()+'</div>'
+        +'<div class="kpi-sub">'+Math.round(k.joints_today/DATA.daily_target*100)+'% of daily</div></div>'
+      +tile("REDOS / WASTE", k.redos, "bad crutches", k.redos>30?'red':'')
+    +'</div>'
+    +'<div class="headline"><span class="hl-tag">SPEED RECORD</span>'
+      +'<span class="hl-text"><b>#3272 Victoria Miles</b> just clocked <b>438 joints/hr</b> &mdash; today\'s top rate</span></div>'
+    +'<div class="cols c2 jr-cols">'
+      +'<div class="panel"><div class="p-head">'
+        +'<div class="p-title">INFUSED JOINTS &middot; OPERATOR LEADERBOARD</div>'
+        +'<div class="p-sub">'+DATA.operators.length+' on shift</div></div>'
+        +'<div class="podium">'+ DATA.operators.slice(0,9).map(opRow).join('') +'</div></div>'
+      +'<div class="panel"><div class="p-head">'
+        +'<div class="p-title">TODAY\'S STRAINS</div>'
+        +'<div class="p-sub">by joints produced</div></div>'
+        +'<div class="strain-list">'+ DATA.strains_today.map(s=>
+          '<div class="strain-row"><span class="nm">'+esc(s.name)+'</span>'
+          +'<span class="ct">'+s.count.toLocaleString()+'</span></div>').join('') +'</div>'
+        +'<div class="jnation-tile idle">'
+          +'<div class="icon">\u{1F570}</div>'
+          +'<div class="l">JNATION MACHINE</div>'
+          +'<div class="sub">idle &middot; last run yesterday 4:30 PM</div></div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="now-bar"><span class="l">NOW RUNNING</span>'
+      +'<span class="t"><b>'+esc(DATA.now_running.strain)+'</b> &middot; '+esc(DATA.now_running.batch)+'</span>'
+      +'<span class="r">~'+esc(DATA.now_running.remaining)+' remaining</span></div>';
+  $('#app').innerHTML = html;
+  bootStage();
+  setTimeout(()=>celebrate({
+    icon:'\u{1F389}', tag:'MILESTONE', name:'15,000 JOINTS',
+    sub:'crossed at 2:14 PM today', sound:'fanfare', confetti:200
+  }), 1000);
+}
+
+function tile(lbl,val,sub,cls){
+  return '<div class="kpi '+(cls||'')+'"><div class="kpi-label">'+lbl
+    +'</div><div class="kpi-val">'+val+'</div><div class="kpi-sub">'+sub+'</div></div>';
+}
+
+render();
+</script>
+</body></html>

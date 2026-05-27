@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PhatPanda Production TVs</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+html,body{overflow:auto;}
+.page{min-height:100vh;background:
+  radial-gradient(900px 600px at 12% -5%, rgba(114,188,68,.22), transparent 60%),
+  radial-gradient(900px 600px at 95% 0%, rgba(255,194,75,.08), transparent 55%),
+  linear-gradient(180deg,#000,#0a0e08 60%,#000);
+  padding:48px 32px 64px;}
+.hero{max-width:1180px;margin:0 auto 36px;display:flex;align-items:center;gap:18px;}
+.hero .panda{width:64px;height:64px;font-size:36px;}
+.hero h1{font-size:42px;font-weight:900;letter-spacing:.06em;line-height:1.05;}
+.hero h1 em{font-style:normal;color:var(--green);}
+.hero p{font-size:14px;color:var(--muted);font-weight:600;letter-spacing:.06em;margin-top:4px;}
+.grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:24px;display:flex;flex-direction:column;gap:14px;
+  transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  position:relative;overflow:hidden;}
+.card:hover{transform:translateY(-3px);border-color:var(--green);
+  box-shadow:0 12px 30px rgba(114,188,68,.18);}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);}
+.card .icon{font-size:42px;line-height:1;}
+.card h2{font-size:22px;font-weight:900;letter-spacing:.04em;}
+.card .who{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--green);}
+.card p{font-size:13px;color:var(--muted);font-weight:500;line-height:1.5;}
+.card .open{margin-top:auto;font-size:12px;font-weight:800;letter-spacing:.16em;
+  color:var(--green);display:flex;align-items:center;gap:6px;}
+.card .open::after{content:"\2192";transition:transform .15s ease;}
+.card:hover .open::after{transform:translateX(4px);}
+.footer{max-width:1180px;margin:48px auto 0;text-align:center;font-size:11px;
+  color:var(--muted);font-weight:600;letter-spacing:.08em;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hero">
+    <div class="panda">P</div>
+    <div>
+      <h1>PHATPANDA <em>PRODUCTION TVs</em></h1>
+      <p>GROW OP FARMS  &middot;  SPOKANE VALLEY, WA  &middot;  PLANT-FLOOR DASHBOARDS</p>
+    </div>
+  </div>
+  <div class="grid">
+    <a class="card" href="shipping.html" target="_blank">
+      <div class="icon">&#128666;</div>
+      <div class="who">TV 1 &middot; SHIPPING / LOADING DOCK</div>
+      <h2>Shipping</h2>
+      <p>Today's truck routes with store-by-store status, countdown to the next truck, and a full-screen TRUCK OUT celebration when a route is fully staged.</p>
+      <div class="open">OPEN BOARD</div>
+    </a>
+    <a class="card" href="cultivation.html" target="_blank">
+      <div class="icon">&#127807;</div>
+      <div class="who">TV 2 &middot; CULTIVATION FLOOR</div>
+      <h2>Cultivation</h2>
+      <p>Bucking 14-day rolling leaderboard (vs 3.0 lb/hr target), Prune team daily leaderboard, and the live Mobius trim queue.</p>
+      <div class="open">OPEN BOARD</div>
+    </a>
+    <a class="card" href="joint-room.html" target="_blank">
+      <div class="icon">&#128140;</div>
+      <div class="who">TV 3 &middot; JOINT / PRE-ROLL ROOM</div>
+      <h2>Joint Room</h2>
+      <p>Per-operator infused joints/hr, today's strain mix, JNation machine status, and milestone celebrations every 1,000 joints.</p>
+      <div class="open">OPEN BOARD</div>
+    </a>
+    <a class="card" href="packaging.html" target="_blank">
+      <div class="icon">&#9881;&#65039;</div>
+      <div class="who">TV 4 &middot; PACKAGING FLOOR</div>
+      <h2>Packaging</h2>
+      <p>Scale Squad machine tiles with downtime alarms + Extraction Packaging leaderboard split by brand (Panda / Dabstract / Snicklefritz).</p>
+      <div class="open">OPEN BOARD</div>
+    </a>
+    <a class="card" href="manager.html" target="_blank">
+      <div class="icon">&#128202;</div>
+      <div class="who">TV 5 &middot; MANAGER / LOBBY</div>
+      <h2>Manager Roll-up</h2>
+      <p>Whole-plant snapshot: 6 big KPI tiles, top performer per team, shipping status, and a live ticker of headline events.</p>
+      <div class="open">OPEN BOARD</div>
+    </a>
+  </div>
+  <div class="footer">&copy; PhatPanda &middot; GROW OP FARMS &middot; All dashboards refresh hourly when wired to live data.</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PhatPanda · Shipping (TV 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000000; --panel:#0f120e; --panel2:#161a13; --line:rgba(255,255,255,.10);
+  --txt:#ffffff; --muted:#9aa39b;
+  --green:#72BC44; --green-d:#4f8a2a; --green-l:#9bd96a;
+  --amber:#FFC24B; --amber-d:#cc8f00;
+  --red:#FF4D5E; --red-d:#a30b1c;
+  --gray:#3a3d36; --gray-l:#5a5e54;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--txt);
+  font-family:'Archivo','Segoe UI',Roboto,sans-serif;overflow:hidden;
+  -webkit-font-smoothing:antialiased;}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
+#stage{position:relative;width:1280px;height:720px;background:var(--bg);
+  transform-origin:center;flex:none;}
+
+/* ---------- header ---------- */
+.header{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px 12px;border-bottom:2px solid var(--green);}
+.brand{display:flex;align-items:center;gap:14px;}
+.panda{width:46px;height:46px;border-radius:50%;background:var(--green);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  color:#000;font-weight:900;}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:.28em;color:var(--muted);line-height:1;}
+.brand-title{font-size:30px;font-weight:900;letter-spacing:.08em;line-height:1.05;}
+.brand-title em{font-style:normal;color:var(--green);}
+.head-mid{text-align:center;}
+.head-day{font-size:22px;font-weight:900;letter-spacing:.18em;color:var(--green);line-height:1;}
+.head-date{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin-top:4px;}
+.head-right{text-align:right;}
+.clock{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:.02em;line-height:1;}
+.updated{font-size:11px;color:var(--green);font-weight:700;letter-spacing:.1em;
+  margin-top:4px;display:flex;align-items:center;gap:6px;justify-content:flex-end;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse 1.8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+
+/* ---------- KPI strip ---------- */
+.kpis{display:grid;grid-template-columns:1fr 1fr 1.6fr 1fr 1fr;gap:10px;padding:12px 28px 6px;}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:10px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+.kpi-label{font-size:10px;font-weight:800;letter-spacing:.18em;color:var(--muted);}
+.kpi-val{font-size:30px;font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums;}
+.kpi-sub{font-size:11px;color:var(--muted);font-weight:600;}
+.kpi.green .kpi-val{color:var(--green);}
+.kpi.red .kpi-val{color:var(--red);}
+.kpi.amber .kpi-val{color:var(--amber);}
+.kpi.next{background:linear-gradient(100deg,rgba(114,188,68,.18),var(--panel2));
+  border-color:rgba(114,188,68,.5);}
+.kpi.next .kpi-val{font-size:38px;color:var(--green);letter-spacing:.04em;}
+.kpi.next .kpi-sub{color:#cfd7c8;}
+
+/* ---------- rotating headline band ---------- */
+.headline{margin:6px 28px 0;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:10px 18px;display:flex;align-items:center;gap:14px;
+  min-height:44px;overflow:hidden;}
+.headline .hl-tag{font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--green);}
+.headline .hl-text{font-size:17px;font-weight:700;flex:1;}
+.headline .hl-text b{color:var(--green);}
+
+/* ---------- routes grid ---------- */
+.grid{display:grid;gap:10px;padding:8px 28px 6px;}
+.grid.c1{grid-template-columns:1fr;}
+.grid.c2{grid-template-columns:1fr 1fr;}
+.grid.c3{grid-template-columns:1fr 1fr 1fr;}
+.grid.c4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.grid.c5{grid-template-columns:repeat(5,1fr);}
+.route{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+.route.late{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset;animation:flash 1.6s infinite;}
+.route.done{border-color:var(--green);background:linear-gradient(180deg,rgba(114,188,68,.10),var(--panel));}
+@keyframes flash{0%,100%{box-shadow:0 0 0 1px var(--red) inset,0 0 18px rgba(255,77,94,.4);}
+  50%{box-shadow:0 0 0 1px var(--red) inset,0 0 36px rgba(255,77,94,.9);}}
+.r-head{display:flex;align-items:center;justify-content:space-between;gap:6px;
+  padding-bottom:6px;border-bottom:1px solid var(--line);}
+.r-left{display:flex;align-items:baseline;gap:8px;min-width:0;}
+.r-code{font-size:22px;font-weight:900;color:var(--green);letter-spacing:.04em;}
+.r-label{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;}
+.r-right{text-align:right;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;}
+.r-right b{display:block;font-size:13px;color:var(--txt);}
+.r-done-badge{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--green);
+  background:rgba(114,188,68,.15);padding:3px 7px;border-radius:4px;}
+.r-late-badge{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--red);
+  background:rgba(255,77,94,.18);padding:3px 7px;border-radius:4px;animation:flash2 1.2s infinite;}
+@keyframes flash2{50%{opacity:.4;}}
+.r-progbar{height:4px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.r-progfill{height:100%;background:var(--green);transition:width 1.2s ease;}
+.stores{display:flex;flex-direction:column;gap:4px;overflow:hidden;}
+.store{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;
+  padding:6px 8px;background:var(--panel2);border-radius:5px;border-left:3px solid var(--gray);
+  font-size:12px;line-height:1.2;}
+.store.ready{border-left-color:var(--green);background:rgba(114,188,68,.10);}
+.store.inspecting{border-left-color:var(--green-l);}
+.store.awaiting_inspect{border-left-color:var(--amber);}
+.store.pulling{border-left-color:var(--amber);background:rgba(255,194,75,.05);}
+.store.prepping{border-left-color:var(--amber-d);}
+.store.approved{border-left-color:var(--gray);}
+.s-main{min-width:0;}
+.s-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.s-meta{font-size:10px;color:var(--muted);font-weight:500;}
+.s-stat{font-size:10px;font-weight:900;letter-spacing:.1em;padding:3px 6px;border-radius:3px;
+  background:var(--gray);color:#fff;white-space:nowrap;}
+.s-stat.ready{background:var(--green);color:#000;}
+.s-stat.inspecting{background:var(--green-l);color:#000;}
+.s-stat.awaiting_inspect{background:var(--amber);color:#000;}
+.s-stat.pulling{background:var(--amber);color:#000;}
+.s-stat.prepping{background:var(--amber-d);color:#000;}
+.s-stat.approved{background:var(--gray-l);color:#fff;}
+
+/* ---------- tomorrow strip ---------- */
+.tomorrow{margin:6px 28px 12px;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:18px;}
+.tom-label{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--muted);white-space:nowrap;}
+.tom-routes{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+.tom{font-size:12px;font-weight:700;background:var(--panel2);padding:4px 10px;
+  border-radius:4px;border:1px solid var(--line);}
+.tom b{color:var(--green);}
+
+/* ---------- waiting ---------- */
+.waiting{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:560px;gap:18px;text-align:center;}
+.waiting .big{font-size:42px;font-weight:900;letter-spacing:.06em;}
+.waiting .msg{font-size:16px;color:var(--muted);max-width:800px;line-height:1.5;}
+.waiting .spin{font-size:60px;animation:spin 3s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---------- truck-out celebration ---------- */
+#truck-out{position:absolute;inset:0;z-index:50;display:flex;align-items:center;
+  justify-content:center;background:radial-gradient(circle at 50% 45%,rgba(0,40,5,.92),rgba(0,0,0,.97));}
+#truck-out.hidden{display:none;}
+.to-inner{display:flex;flex-direction:column;align-items:center;gap:14px;
+  animation:pop .7s cubic-bezier(.16,1.2,.3,1) both;}
+@keyframes pop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+.to-truck{font-size:120px;animation:roll 2.5s ease-in-out infinite;}
+@keyframes roll{0%,100%{transform:translateX(-30px);}50%{transform:translateX(30px);}}
+.to-tag{font-size:38px;font-weight:900;letter-spacing:.34em;color:var(--green);
+  text-shadow:0 0 30px rgba(114,188,68,.9);animation:blink 1s steps(2) infinite;}
+@keyframes blink{50%{opacity:.55;}}
+.to-route{font-size:80px;font-weight:900;line-height:1;
+  background:linear-gradient(92deg,#fff,var(--green));-webkit-background-clip:text;
+  background-clip:text;color:transparent;text-shadow:0 0 50px rgba(114,188,68,.4);
+  text-align:center;}
+.to-sub{font-size:20px;font-weight:700;color:#cfd7c8;}
+
+#confetti{position:absolute;inset:0;pointer-events:none;z-index:55;}
+#sound-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  z-index:40;background:rgba(255,255,255,.08);border:1px solid var(--line);
+  padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;
+  color:var(--muted);cursor:pointer;}
+#sound-hint.hidden{display:none;}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <a class="back" style="position:absolute;top:18px;right:28px;z-index:30;font-size:11px;font-weight:700;letter-spacing:.12em;color:#9aa39b;background:rgba(255,255,255,.06);padding:5px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);text-transform:uppercase;text-decoration:none;" href="index.html">&larr; Index</a>
+    <div id="app"></div>
+    <div id="truck-out" class="hidden">
+      <div class="to-inner">
+        <div class="to-truck">&#128666;</div>
+        <div class="to-tag">TRUCK OUT</div>
+        <div class="to-route" id="to-route">ROUTE</div>
+        <div class="to-sub" id="to-sub">all stores staged &amp; inspected</div>
+      </div>
+    </div>
+    <canvas id="confetti"></canvas>
+    <div id="sound-hint">&#128266; click to enable sound</div>
+  </div>
+</div>
+
+<script>
+const DATA = {"waiting": false, "title": "SHIPPING DASHBOARD", "day_code": "TUE", "day_label": "TUESDAY", "tomorrow_code": "WED", "tomorrow_label": "WEDNESDAY", "date_label": "May 27, 2026", "generated_epoch_ms": 1779840386319, "today_routes": [{"code": "T1", "label": "Tuesday Route 1", "departure_str": "11:00", "stores": [{"name": "Greenside Bellevue", "status": "ready", "status_label": "READY", "order_no": "4800", "units": "14", "uboat": "A", "puller": "DM", "inspector": "Jamie Lee", "pull_total_min": 35.0, "insp_total_min": 22.0, "manifest": "WA.SO10000"}, {"name": "Higher Leaf Kirkland", "status": "ready", "status_label": "READY", "order_no": "4828", "units": "26", "uboat": "E", "puller": "DM", "inspector": "Jamie Lee", "pull_total_min": 35.0, "insp_total_min": 22.0, "manifest": "WA.SO10524"}, {"name": "Redmond Leaf Avondale", "status": "ready", "status_label": "READY", "order_no": "4856", "units": "20", "uboat": "A", "puller": "DM", "inspector": "Jamie Lee", "pull_total_min": 35.0, "insp_total_min": 22.0, "manifest": "WA.SO11048"}, {"name": "Uncle Ike's Capitol Hill", "status": "ready", "status_label": "READY", "order_no": "4884", "units": "14", "uboat": "E", "puller": "DM", "inspector": "Jamie Lee", "pull_total_min": 35.0, "insp_total_min": 22.0, "manifest": "WA.SO11572"}], "total": 4, "ready": 4, "in_progress": 0, "pct_ready": 100.0, "complete": true}, {"code": "T2", "label": "Tuesday Route 2", "departure_str": "13:00", "stores": [{"name": "Top Shelf Spokane", "status": "ready", "status_label": "READY", "order_no": "4807", "units": "17", "uboat": "B", "puller": "KT", "inspector": "Chris Tanaka", "pull_total_min": 40.0, "insp_total_min": 25.0, "manifest": "WA.SO10131"}, {"name": "Cinder Downtown", "status": "ready", "status_label": "READY", "order_no": "4835", "units": "29", "uboat": "F", "puller": "KT", "inspector": "Chris Tanaka", "pull_total_min": 40.0, "insp_total_min": 25.0, "manifest": "WA.SO10655"}, {"name": "Apex Cannabis Spokane", "status": "ready", "status_label": "READY", "order_no": "4863", "units": "23", "uboat": "B", "puller": "KT", "inspector": "Chris Tanaka", "pull_total_min": 40.0, "insp_total_min": 25.0, "manifest": "WA.SO11179"}, {"name": "Local Roots Cannabis", "status": "inspecting", "status_label": "INSPECTING", "order_no": "4891", "units": "17", "uboat": "F", "puller": "KT", "inspector": "Chris Tanaka", "pull_total_min": 40.0, "insp_total_min": null, "manifest": "WA.SO11703"}], "total": 4, "ready": 3, "in_progress": 1, "pct_ready": 75.0, "complete": false}, {"code": "T3", "label": "Tuesday Route 3", "departure_str": "14:00", "stores": [{"name": "Have a Heart Bellevue", "status": "ready", "status_label": "READY", "order_no": "4814", "units": "20", "uboat": "C", "puller": "JN", "inspector": "Morgan Brooks", "pull_total_min": 45.0, "insp_total_min": 28.0, "manifest": "WA.SO10262"}, {"name": "Lux Pot Shop", "status": "ready", "status_label": "READY", "order_no": "4842", "units": "14", "uboat": "G", "puller": "JN", "inspector": "Morgan Brooks", "pull_total_min": 45.0, "insp_total_min": 28.0, "manifest": "WA.SO10786"}, {"name": "Cannabis & Glass", "status": "pulling", "status_label": "PULLING", "order_no": "4870", "units": "26", "uboat": "C", "puller": "JN", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO11310"}, {"name": "The Joint Cooperative", "status": "prepping", "status_label": "PREPPING", "order_no": "4898", "units": "20", "uboat": "G", "puller": "RM", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO11834"}], "total": 4, "ready": 2, "in_progress": 2, "pct_ready": 50.0, "complete": false}, {"code": "T5", "label": "Tuesday Route 5", "departure_str": "15:30", "stores": [{"name": "Sticky's Pot Shop", "status": "inspecting", "status_label": "INSPECTING", "order_no": "4821", "units": "23", "uboat": "D", "puller": "RM", "inspector": "Sasha Patel", "pull_total_min": 50.0, "insp_total_min": null, "manifest": "WA.SO10393"}, {"name": "Diego Pellicer", "status": "pulling", "status_label": "PULLING", "order_no": "4849", "units": "17", "uboat": "H", "puller": "RM", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO10917"}, {"name": "The Reef Capitol Hill", "status": "prepping", "status_label": "PREPPING", "order_no": "4877", "units": "29", "uboat": "D", "puller": "DM", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO11441"}, {"name": "Origins Cannabis", "status": "approved", "status_label": "QUEUED", "order_no": "4905", "units": "23", "uboat": "H", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO11965"}], "total": 4, "ready": 0, "in_progress": 3, "pct_ready": 0.0, "complete": false}], "tomorrow_routes": [{"code": "W1", "label": "Wednesday Route 1", "departure_str": "06:00", "stores": [{"name": "Olympia Cannabis Co", "status": "approved", "status_label": "QUEUED", "order_no": "5100", "units": "15", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20000"}, {"name": "Mary Mart", "status": "approved", "status_label": "QUEUED", "order_no": "5120", "units": "21", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20485"}], "total": 2, "ready": 0, "in_progress": 0, "pct_ready": 0.0, "complete": false}, {"code": "W2", "label": "Wednesday Route 2", "departure_str": "07:00", "stores": [{"name": "The Joint Olympia", "status": "approved", "status_label": "QUEUED", "order_no": "5104", "units": "19", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20097"}, {"name": "Clutch Cannabis", "status": "approved", "status_label": "QUEUED", "order_no": "5124", "units": "25", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20582"}], "total": 2, "ready": 0, "in_progress": 0, "pct_ready": 0.0, "complete": false}, {"code": "W3A", "label": "Wednesday W3-A", "departure_str": "08:00", "stores": [{"name": "Green Theory Tacoma", "status": "approved", "status_label": "QUEUED", "order_no": "5108", "units": "23", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20194"}, {"name": "Higher Leaf BelRed", "status": "approved", "status_label": "QUEUED", "order_no": "5128", "units": "15", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20679"}], "total": 2, "ready": 0, "in_progress": 0, "pct_ready": 0.0, "complete": false}, {"code": "W3B", "label": "Wednesday W3-B", "departure_str": "09:00", "stores": [{"name": "Cedar Greens Bonney Lake", "status": "approved", "status_label": "QUEUED", "order_no": "5112", "units": "27", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20291"}, {"name": "Gallery Spanaway", "status": "approved", "status_label": "QUEUED", "order_no": "5132", "units": "19", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20776"}], "total": 2, "ready": 0, "in_progress": 0, "pct_ready": 0.0, "complete": false}, {"code": "W4", "label": "Wednesday Route 4", "departure_str": "10:00", "stores": [{"name": "Pacific Rim Lakewood", "status": "approved", "status_label": "QUEUED", "order_no": "5116", "units": "17", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20388"}, {"name": "Thunder Olympia", "status": "approved", "status_label": "QUEUED", "order_no": "5136", "units": "23", "uboat": "", "puller": "", "inspector": "", "pull_total_min": null, "insp_total_min": null, "manifest": "WA.SO20873"}], "total": 2, "ready": 0, "in_progress": 0, "pct_ready": 0.0, "complete": false}], "kpis": {"total_stores": 16, "ready_stores": 9, "routes_total": 4, "routes_complete": 1, "units_total": 332, "units_staged": 177, "avg_pull_min": 40.0, "next_truck": {"code": "T2", "label": "Tuesday Route 2", "dep_str": "1:00 PM", "dep_epoch_ms": 1779886800000, "complete": false}, "late_risk_codes": [], "fastest_pull": {"store": "Greenside Bellevue", "min": 35.0, "puller": "DM", "route": "T1"}, "top_inspector": {"name": "Jamie Lee", "count": 4}}, "celebrations": {"newly_ready_routes": ["T1"], "event_id": "20260527000626-T1", "_cur_ready_routes": ["T1"]}};
+const $ = s => document.querySelector(s);
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function pad(n){return String(n).padStart(2,'0');}
+
+/* ---- scale stage to viewport ---- */
+function scaleStage(){
+  const s=$('#stage'), w=innerWidth, h=innerHeight;
+  const k=Math.min(w/1280, h/720);
+  s.style.transform='scale('+k+')';
+}
+addEventListener('resize',scaleStage); scaleStage();
+
+/* ---- render ---- */
+function render(){
+  if(DATA.waiting){return renderWaiting();}
+  $('#app').innerHTML = header() + kpis() + headline() + grid() + tomorrow();
+  startHeadlineRotation();
+  setTimeout(maybeTruckOut, 700);
+  // first paint progress bars after a tick
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.r-progfill').forEach(f=>{
+      f.style.width = (f.dataset.pct||0)+'%';
+    });
+  });
+}
+
+function header(){
+  return '<div class="header">'
+    +'<div class="brand"><div class="panda">P</div>'
+    +'<div><div class="brand-name">PHATPANDA</div>'
+    +'<div class="brand-title">SHIP<em>PING</em></div></div></div>'
+    +'<div class="head-mid"><div class="head-day">'+esc(DATA.day_label)+'</div>'
+    +'<div class="head-date">'+esc(DATA.date_label)+'</div></div>'
+    +'<div class="head-right"><div class="clock" id="clock">--:--</div>'
+    +'<div class="updated"><span class="dot"></span><span id="upd">live</span></div></div>'
+    +'</div>';
+}
+
+function kpis(){
+  const k=DATA.kpis;
+  const nt=k.next_truck;
+  const ntVal = nt ? (nt.complete?'ALL OUT':nt.code+' &middot; <span id="cd">--:--</span>') : '—';
+  const ntSub = nt ? (esc(nt.label)+' &bull; '+esc(nt.dep_str)) : 'no routes scheduled';
+  return '<div class="kpis">'
+    +tile('ROUTES TODAY',(k.routes_complete||0)+' / '+(k.routes_total||0),
+          k.routes_complete===k.routes_total&&k.routes_total>0?'complete':'in progress',
+          k.routes_complete===k.routes_total&&k.routes_total>0?'green':'')
+    +tile('STORES STAGED',(k.ready_stores||0)+' / '+(k.total_stores||0),
+          k.total_stores?Math.round(100*k.ready_stores/k.total_stores)+'%':'—',
+          k.ready_stores===k.total_stores&&k.total_stores>0?'green':'')
+    +'<div class="kpi next"><div class="kpi-label">NEXT TRUCK</div>'
+    +'<div class="kpi-val">'+ntVal+'</div><div class="kpi-sub">'+ntSub+'</div></div>'
+    +tile('AVG PULL TIME',k.avg_pull_min?(Math.round(k.avg_pull_min)+' min'):'—',
+          'across '+ (sumPulled())+' stores','')
+    +tile('LATE RISK',(k.late_risk_codes||[]).length,
+          (k.late_risk_codes||[]).length?'routes at risk':'all clear',
+          (k.late_risk_codes||[]).length?'red':'green')
+    +'</div>';
+}
+function tile(lbl,val,sub,cls){
+  return '<div class="kpi '+(cls||'')+'"><div class="kpi-label">'+esc(lbl)
+    +'</div><div class="kpi-val">'+val+'</div><div class="kpi-sub">'+esc(sub)+'</div></div>';
+}
+function sumPulled(){
+  let n=0; for(const r of DATA.today_routes||[]) for(const s of r.stores)
+    if(s.pull_total_min) n++;
+  return n;
+}
+
+let headlineIx=0, headlineTimer=null;
+function headline(){
+  return '<div class="headline">'
+    +'<span class="hl-tag" id="hl-tag">LIVE</span>'
+    +'<span class="hl-text" id="hl-text">'+ headlineText(0) +'</span></div>';
+}
+function headlineText(i){
+  const k=DATA.kpis;
+  const items=[];
+  if(k.fastest_pull) items.push({tag:'FASTEST PULL',
+    html:'<b>'+esc(k.fastest_pull.store)+'</b> &middot; '
+      +Math.round(k.fastest_pull.min)+' min'
+      +(k.fastest_pull.puller?' &middot; by <b>'+esc(k.fastest_pull.puller)+'</b>':'')});
+  if(k.top_inspector) items.push({tag:'TOP INSPECTOR',
+    html:'<b>'+esc(k.top_inspector.name)+'</b> &middot; '
+      +k.top_inspector.count+' stores cleared today'});
+  const onpace=(DATA.today_routes||[]).filter(r=>!r.complete&&r.ready>0)
+    .map(r=>r.code+' '+Math.round(r.pct_ready||0)+'%').join(' &middot; ');
+  if(onpace) items.push({tag:'ROUTE PROGRESS', html:onpace});
+  if(!items.length) items.push({tag:'LIVE', html:'Awaiting first pulled order of the day.'});
+  if(i>=items.length) i=0;
+  const it=items[i];
+  document.documentElement.style.setProperty('--hl-i', i);
+  setTimeout(()=>{const t=document.querySelector('#hl-tag'); if(t)t.textContent=it.tag;}, 0);
+  return it.html;
+}
+function startHeadlineRotation(){
+  clearInterval(headlineTimer);
+  headlineTimer=setInterval(()=>{
+    headlineIx++;
+    const tx=document.querySelector('#hl-text');
+    if(tx){tx.innerHTML = headlineText(headlineIx);}
+  }, 9000);
+}
+
+function grid(){
+  const r=DATA.today_routes||[];
+  if(!r.length) return '<div class="grid c1"><div class="route"><div class="r-head"><div class="r-left"><div class="r-code">—</div><div class="r-label">No routes scheduled for today</div></div></div></div></div>';
+  const cls='c'+Math.min(5, Math.max(1, r.length));
+  return '<div class="grid '+cls+'">' + r.map(routeHTML).join('') + '</div>';
+}
+function routeHTML(r){
+  const late = (DATA.kpis.late_risk_codes||[]).indexOf(r.code)>=0;
+  const cls = (r.complete?'done':'') + (late?' late':'');
+  const badge = r.complete
+    ? '<div class="r-done-badge">&#10003; LAUNCHED</div>'
+    : late ? '<div class="r-late-badge">&#9888; LATE RISK</div>'
+    : '<div class="r-right"><span>departs</span><b>'+esc(r.departure_str||'—')+'</b></div>';
+  return '<div class="route '+cls+'">'
+    +'<div class="r-head"><div class="r-left">'
+    +'<div class="r-code">'+esc(r.code)+'</div>'
+    +'<div class="r-label">'+esc(r.label)+'</div></div>'
+    +badge+'</div>'
+    +'<div class="r-progbar"><div class="r-progfill" data-pct="'+r.pct_ready+'"></div></div>'
+    +'<div class="stores">' + r.stores.map(storeHTML).join('') + '</div></div>';
+}
+function storeHTML(s){
+  const mins=[];
+  if(s.pull_total_min) mins.push('pull '+Math.round(s.pull_total_min)+'m');
+  if(s.insp_total_min) mins.push('QC '+Math.round(s.insp_total_min)+'m');
+  if(s.inspector) mins.push(esc(s.inspector));
+  return '<div class="store '+s.status+'">'
+    +'<div class="s-main"><div class="s-name">'+esc(s.name)+'</div>'
+    +'<div class="s-meta">'+(s.order_no?'#'+esc(s.order_no)+' &middot; ':'')
+    +(s.units?esc(s.units)+'u &middot; ':'')+mins.join(' &middot; ')+'</div></div>'
+    +'<div class="s-stat '+s.status+'">'+esc(s.status_label)+'</div></div>';
+}
+
+function tomorrow(){
+  const t=DATA.tomorrow_routes||[];
+  if(!t.length) return '<div class="tomorrow"><div class="tom-label">TOMORROW &middot; '+esc(DATA.tomorrow_label||'')+'</div><div class="tom-routes"><span class="tom" style="color:var(--muted)">no routes queued</span></div></div>';
+  return '<div class="tomorrow"><div class="tom-label">TOMORROW &middot; '+esc(DATA.tomorrow_label||'')+'</div>'
+    +'<div class="tom-routes">'
+    + t.map(r=>'<span class="tom"><b>'+esc(r.code)+'</b> &middot; '+r.total+' stores</span>').join('')
+    +'</div></div>';
+}
+
+function renderWaiting(){
+  $('#app').innerHTML = header()
+    +'<div class="waiting"><div class="spin">&#9881;</div>'
+    +'<div class="big">Waiting for pull-sheet data</div>'
+    +'<div class="msg">'+esc(DATA.message||'')+'</div></div>';
+}
+
+/* ---- clock + countdown + updated ---- */
+function tick(){
+  const c=$('#clock');
+  if(c){
+    const n=new Date();
+    let h=n.getHours(),m=n.getMinutes();
+    const ap=h>=12?'PM':'AM'; h=h%12||12;
+    c.textContent=h+':'+pad(m)+' '+ap;
+  }
+  const u=$('#upd');
+  if(u&&DATA.generated_epoch_ms){
+    const mins=Math.floor((Date.now()-DATA.generated_epoch_ms)/60000);
+    u.textContent = mins<=0?'updated just now' : mins===1?'updated 1 min ago' : 'updated '+mins+' min ago';
+  }
+  const cd=$('#cd');
+  if(cd && DATA.kpis && DATA.kpis.next_truck && !DATA.kpis.next_truck.complete){
+    const left = Math.floor((DATA.kpis.next_truck.dep_epoch_ms - Date.now())/1000);
+    if(left>0){
+      const hh=Math.floor(left/3600), mm=Math.floor((left%3600)/60), ss=left%60;
+      cd.textContent = (hh?hh+':':'')+pad(mm)+':'+pad(ss);
+    } else {
+      cd.textContent='DEPARTING';
+    }
+  }
+}
+
+/* ---- confetti + sound ---- */
+const cv=$('#confetti'),cx=cv.getContext('2d');
+let parts=[],raf=null;
+function sizeCanvas(){cv.width=1280;cv.height=720;}
+sizeCanvas();
+const CC=['#72BC44','#FFFFFF','#9bd96a','#FFC24B','#000000'];
+function burst(n){
+  for(let i=0;i<n;i++){
+    parts.push({x:Math.random()*1280, y:-20-Math.random()*240,
+      vx:(Math.random()-0.5)*6, vy:2+Math.random()*5,
+      s:5+Math.random()*8, c:CC[(Math.random()*CC.length)|0],
+      r:Math.random()*6, vr:(Math.random()-0.5)*0.4, life:1});
+  }
+  if(!raf) raf=requestAnimationFrame(loop);
+}
+function loop(){
+  cx.clearRect(0,0,1280,720);
+  parts.forEach(p=>{
+    p.vy+=0.14; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
+    if(p.y>440) p.life-=0.012;
+    cx.save(); cx.globalAlpha=Math.max(0,p.life);
+    cx.translate(p.x,p.y); cx.rotate(p.r); cx.fillStyle=p.c;
+    cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); cx.restore();
+  });
+  parts=parts.filter(p=>p.life>0 && p.y<760);
+  if(parts.length) raf=requestAnimationFrame(loop);
+  else { raf=null; cx.clearRect(0,0,1280,720); }
+}
+
+let actx=null;
+function ctx(){
+  if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(actx&&actx.state==='suspended') actx.resume();
+  return actx;
+}
+function airhorn(){
+  const a=ctx(); if(!a) return;
+  // truck-horn-ish: two stacked oscillators, descending then steady
+  const t0=a.currentTime;
+  [196,294].forEach((f,i)=>{
+    const o=a.createOscillator(), g=a.createGain();
+    o.type='sawtooth'; o.frequency.setValueAtTime(f, t0);
+    o.frequency.linearRampToValueAtTime(f*0.85, t0+0.6);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.18, t0+0.05);
+    g.gain.setValueAtTime(0.18, t0+0.55);
+    g.gain.exponentialRampToValueAtTime(0.001, t0+1.0);
+    o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0+1.05);
+  });
+}
+
+/* ---- truck-out celebration ---- */
+function maybeTruckOut(){
+  if(DATA.waiting) return;
+  const ev=DATA.celebrations||{};
+  const r=ev.newly_ready_routes||[];
+  if(r.length) playTruckOut(r);
+}
+function playTruckOut(codes){
+  const route = (DATA.today_routes||[]).find(r=>r.code===codes[0]) || {code:codes[0],label:''};
+  $('#to-route').textContent = route.code + ' — ' + (route.label||'').toUpperCase();
+  $('#to-sub').textContent = (codes.length>1 ? codes.length+' routes launched' : 'all stores staged & inspected');
+  const ov=$('#truck-out'); ov.classList.remove('hidden');
+  burst(180); airhorn();
+  setTimeout(()=>burst(100), 800);
+  setTimeout(()=>burst(100), 1600);
+  const close=()=>ov.classList.add('hidden');
+  ov.onclick=close;
+  setTimeout(close, 9000);
+}
+
+/* ---- unlock audio on interaction ---- */
+function hideHint(){const h=$('#sound-hint'); if(h)h.classList.add('hidden');}
+function onInteract(){ ctx(); hideHint(); }
+document.addEventListener('click', onInteract);
+document.addEventListener('keydown', onInteract);
+
+/* ---- boot ---- */
+render();
+tick();
+setInterval(tick, 1000);
+// auto-refresh every 5 min to pick up the next hourly regeneration
+setTimeout(()=>location.reload(), 5*60*1000);
+</script>
+</body>
+</html>
